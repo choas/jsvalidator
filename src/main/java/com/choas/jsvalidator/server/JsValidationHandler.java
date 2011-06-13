@@ -15,8 +15,8 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
-import validate.*;
-
+import com.choas.jsvalidator.Person;
+import com.choas.jsvalidator.validate.JsValidation;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
@@ -86,7 +86,7 @@ public class JsValidationHandler extends AbstractHandler {
 			response.setStatus(HttpServletResponse.SC_OK);
 			baseRequest.setHandled(true);
 
-			InputStream is = this.getClass().getResourceAsStream(target);
+			InputStream is = this.getClass().getResourceAsStream("/" + target);
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
 			String line;
 			while ((line = br.readLine()) != null) {
