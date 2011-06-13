@@ -21,5 +21,30 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.jetty.aggregate</groupId>
+      <artifactId>jetty-aggregate-project</artifactId>
+      <version>7.0.2.v20100331</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>1.7.1</version> <!-- -SNAPSHOT -->
+    </dependency>
+
+<!--
+jetty-all-7.0.2.v20100331
+servlet-api-2.5
+gson-1.7.1
+-->
+
   </dependencies>
 </project>
