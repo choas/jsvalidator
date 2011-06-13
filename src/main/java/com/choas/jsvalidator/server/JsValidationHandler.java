@@ -86,7 +86,7 @@ public class JsValidationHandler extends AbstractHandler {
 			response.setStatus(HttpServletResponse.SC_OK);
 			baseRequest.setHandled(true);
 
-			InputStream is = this.getClass().getResourceAsStream("/" + target);
+			InputStream is = this.getClass().getResourceAsStream(target);
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
 			String line;
 			while ((line = br.readLine()) != null) {

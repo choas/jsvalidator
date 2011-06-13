@@ -50,8 +50,8 @@ public class JsValidation {
 	private StringBuffer readJSfiles() throws IOException {
 		final StringBuffer buffer = new StringBuffer();
 		List<String> jsfiles = new ArrayList<String>();
-		jsfiles.add("src/js/validate.js");
-		jsfiles.add("src/js/javaWrapper.js");
+		jsfiles.add("src/main/resources/js/validate.js");
+		jsfiles.add("src/main/resources/js/javaWrapper.js");
 
 		String newline = System.getProperty("line.separator");
 		for (String jsfile : jsfiles) {
