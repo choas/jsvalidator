@@ -1,0 +1,78 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+  <title>JavaScript validation with Java</title> 
+  <script type="text/javascript" src="js/jquery-1.6.1.js"></script>
+  <script type="text/javascript" src="js/jquery.ba-serializeobject.js"></script>
+  <script type="text/javascript" src="js/validate.js"></script> 
+  <style>
+	body,p,h1,h2,h3,h4,table,td,th,ul,ol,input {
+		font-family:sans-serif;
+	}
+  	h1 {
+  		color: #777;
+  	}
+	.info {
+    	background: #ee7;
+    	height: 42px;
+    	padding: 10px;
+	}
+  </style> 
+  <script> 
+$(function() {
+    $('#buttonvalidate').click(function() {
+	    var person = new Object();
+		jQuery.each($(":input").serializeArray(), function(i, field){
+			person[field.name] = field.value;
+    	});
+    	var msgs = validate(person, "person");
+    	var validate_msg = "";
+    	jQuery.each(msgs, function(i, msg){
+    		validate_msg += msg + "\n";
+    	});
+    	$('#validate').text(validate_msg);
+    });
+    function send(reqdata, overwrite_request) {
+    	if (overwrite_request) {
+    		$('#request').val(reqdata);
+    	}
+        $.post("validate.json", 
+    		reqdata,
+			function(resdata) {
+				$('#response').text(JSON.stringify(resdata));
+			});
+		return false;
+    }
+	$('#buttonsend').click(function() {
+		send(JSON.stringify($('form').serializeObject()), true);
+	});
+    $('#buttonsend2').click(function() {
+    	send($('#request')[0].value, false);
+    });
+});
+  </script> 
+</head> 
+<body>
+	<h1>JavaScript validation with Java</h1>
+	<form action="" method="post" id="vform">
+		<table>
+			<tr><td>firstname:</td><td><input type="text" name="firstname" value="Hugo"/></td></tr>
+			<tr><td>lastname:</td><td><input type="text" name="lastname"/></td></tr> 
+			<tr><td>gender:</td><td><input type="radio" name="gender" value="Male"/> male 
+									&nbsp;&nbsp; 
+									<input type="radio" name="gender" value="Female"/>female</td></tr> 
+			<tr><td>birthday:</td><td><input type="text" name="birthday" value="1990/01/01" id="birthday"/></td></tr>
+			<tr><td><input type="button" id="buttonvalidate" value="validate:"/></td><td><pre class="info" id="validate"></pre></td></tr>
+			<tr><td></td><td><input type="button" id="buttonsend" value="send form"/></td></tr>
+			<tr><td>&nbsp;</td><td/></tr>
+			<tr><td>request:</td><td><textarea class="info" id="request" cols="80"></textarea></td></tr>
+			<tr><td></td><td><input type="button" id="buttonsend2" value="send request json"/></td></tr>
+			<tr><td>response:</td><td><pre class="info" id="response"/></td></tr>
+			<tr><td>Note:</td><td>
+					 <i>validate</i> uses validate.js via browser.<br>
+					 <i>send form</i> and <i>send request json</i> uses validate.js via java backend.</td></tr>
+		</table>
+	</form>  
+</body> 
+</html>
