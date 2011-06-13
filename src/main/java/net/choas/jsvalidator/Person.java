@@ -1,4 +1,4 @@
-package com.choas.jsvalidator;
+package net.choas.jsvalidator;
 
 public class Person {
 	public String getFirstname() {

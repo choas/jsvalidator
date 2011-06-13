@@ -1,4 +1,4 @@
-package com.choas.jsvalidator.validate;
+package net.choas.jsvalidator.validate;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -9,9 +9,10 @@ import java.util.List;
 import javax.script.Compilable;
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import javax.script.SimpleBindings;
 import javax.script.SimpleScriptContext;
-import javax.script.*;
 
 /**
  * This is a sample class for JavaScript validation used inside of Java.

@@ -1,4 +1,4 @@
-package com.choas.jsvalidator.server;
+package net.choas.jsvalidator.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,12 +11,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.choas.jsvalidator.Person;
+import net.choas.jsvalidator.validate.JsValidation;
+
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
-import com.choas.jsvalidator.Person;
-import com.choas.jsvalidator.validate.JsValidation;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
@@ -52,8 +53,8 @@ public class JsValidationHandler extends AbstractHandler {
 			List<String> validateMsgs = new ArrayList<String>();
 			try {
 				Gson gson = new Gson();
-				Person person = 
-					gson.fromJson(request.getReader(), Person.class);
+				Person person = gson
+						.fromJson(request.getReader(), Person.class);
 				validate(person, validateMsgs);
 			} catch (JsonParseException e) {
 				e.printStackTrace();
@@ -111,7 +112,7 @@ public class JsValidationHandler extends AbstractHandler {
 	private void validate(Person person, List<String> validateMsgs) {
 		System.out.println("js validate");
 		JsValidation jv = new JsValidation();
-		//jv.runWithDebug(person, validateMsgs);
+		// jv.runWithDebug(person, validateMsgs);
 		jv.run(person, validateMsgs);
 	}
 
