@@ -1,4 +1,4 @@
-package com.choas.jsvalidator;
+package net.choas.jsvalidator;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
