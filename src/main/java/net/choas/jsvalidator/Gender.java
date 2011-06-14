@@ -22,6 +22,12 @@
 
 package net.choas.jsvalidator;
 
+/**
+ * Gender enumeration.
+ * 
+ * @author Lars Gregori
+ *
+ */
 enum Gender {
 	Male, Female;
 }

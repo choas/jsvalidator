@@ -37,17 +37,21 @@ import javax.script.SimpleBindings;
 import javax.script.SimpleScriptContext;
 
 /**
- * This is a sample class for JavaScript validation used inside of Java.
+ * This is a sample class for JavaScript validation with Java.
  * 
- * TODO license
- * 
- * @author gregoril
+ * @author Lars Gregori
  * 
  */
 public class JsValidation {
 
 	private CompiledScript javaWrapperScript = null;
 
+	/**
+	 * Run the validation.
+	 * 
+	 * @param obj object which has to be validated.
+	 * @param validateMsgs validation messages.
+	 */
 	public void run(Object obj, List<String> validateMsgs) {
 		ScriptEngineManager mgr = new ScriptEngineManager();
 		Compilable ce = (Compilable) mgr.getEngineByName("ECMAScript");
@@ -89,6 +93,11 @@ public class JsValidation {
 		return buffer;
 	}
 
+	/**
+	 * Run validation (incl. JavaScript getter- and setter calls).
+	 * @param obj object which is validated.
+	 * @param validateMsgs validation messages.
+	 */
 	public void runWithDebug(Object obj, List<String> validateMsgs) {
 		// http://blogs.oracle.com/sundararajan/entry/javascript_debugging_tips_for_mustang
 
@@ -109,7 +118,7 @@ public class JsValidation {
 		}
 	}
 
-	public class DebugBindings extends SimpleBindings {
+	class DebugBindings extends SimpleBindings {
 		@Override
 		public Object put(String name, Object value) {
 			Object res = super.put(name, value);

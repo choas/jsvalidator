@@ -22,6 +22,12 @@
 
 package net.choas.jsvalidator;
 
+/**
+ * Example person class.
+ * 
+ * @author Lars Gregori
+ *
+ */
 public class Person {
 	public String getFirstname() {
 		return firstname;

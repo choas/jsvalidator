@@ -47,75 +47,35 @@ import com.google.gson.JsonParseException;
 // https://sites.google.com/site/gson/gson-user-guide#TOC-Object-Examples
 // http://download.oracle.com/javase/6/docs/technotes/guides/scripting/programmer_guide/index.html
 
+/**
+ * Jetty handler for a JsValidator.
+ * 
+ * @author Lars Gregori
+ *
+ */
 public class JsValidatorHandler extends AbstractHandler {
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.jetty.server.Handler#handle(java.lang.String, org.eclipse.jetty.server.Request, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
 	public void handle(String target, Request baseRequest,
 			HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 
-		if (target.equals("/favicon.ico")) {
-			response.setContentType("image/x-icon");
-			response.setStatus(HttpServletResponse.SC_OK);
-			baseRequest.setHandled(true);
-
-			// http://www.favicon.cc/?action=icon&file_id=33004
-			String faviconBase64 = "AAABAAEAEBAAAAAAAABoBQAAFgAAACgAAAAQAAAAIAAAAAEACAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAzMzMAOjo6AD///8AZmZmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEBAQEBAQAAAAAAAAABAEBAQEBAQEBBAAAAAAAAAQBAgICAgICAQQAAAAAAAAEAQICAgICAgEEBAQEAAAABAECAgICAgIBBAEBBAAAAAQBAgICAgICAQQDAQQAAAAEAQICAgICAgEEAQEEAAAABAEBAQEBAQEBBAQEBAAAAAQEBAQEBAQEBAQAAAAAAAAAAQEBAQEBAQEAAAAAAAAAAAABAQEBAQEBAAAAAAAAAAAAAQABAQAAAQAAAAAAAAAAAAEAAQEAAAEAAAAAAAAAAAAAAAEAAAABAAAAAAAAAAAAAAABAAAAAAAAAAAAAP//AADAPwAAgB8AAIAfAACAAwAAgAMAAIADAACAAwAAgAMAAIAfAADAPwAA4D8AAOm/AADpvwAA+78AAPv/AAA=";
-			System.out.println("favicon");
-
-			response.getWriter().println(
-					org.eclipse.jetty.http.security.B64Code
-							.decode(faviconBase64));
-			return;
-		}
 		if (target.toLowerCase().indexOf("json") >= 0) {
-			response.setContentType("application/json;charset=utf-8");
-			response.setStatus(HttpServletResponse.SC_OK);
-			baseRequest.setHandled(true);
-
-			List<String> validateMsgs = new ArrayList<String>();
-			try {
-				Gson gson = new Gson();
-				Person person = gson
-						.fromJson(request.getReader(), Person.class);
-				validate(person, validateMsgs);
-			} catch (JsonParseException e) {
-				e.printStackTrace();
-				validateMsgs.add("SYSTEM " + e.getCause().getMessage());
-			}
-
-			Gson gsonValidateMsgs = new Gson();
-			String jsonResponse = gsonValidateMsgs.toJson(validateMsgs);
-			System.out.println(jsonResponse);
-			response.getWriter().println(jsonResponse);
+			validateJson(baseRequest, request, response);
 			return;
 		}
-
 		if (target.equals("/")) {
-			response.setContentType("text/html;charset=utf-8");
-			response.setStatus(HttpServletResponse.SC_OK);
-			baseRequest.setHandled(true);
-			InputStream is = this.getClass().getResourceAsStream("/index.html");
-			BufferedReader br = new BufferedReader(new InputStreamReader(is));
-			String line;
-			while ((line = br.readLine()) != null) {
-				response.getWriter().println(line);
-			}
-			is.close();
+			indexhtml(baseRequest, response);
 			return;
 		}
 		if (target.toLowerCase().lastIndexOf(".js") > 0) {
-			System.out.println("load javascript " + target);
-			response.setContentType("text/javascript");
-			response.setStatus(HttpServletResponse.SC_OK);
-			baseRequest.setHandled(true);
-
-			InputStream is = this.getClass().getResourceAsStream(target);
-			BufferedReader br = new BufferedReader(new InputStreamReader(is));
-			String line;
-			while ((line = br.readLine()) != null) {
-				response.getWriter().println(line);
-			}
-			is.close();
+			loadJavascript(target, baseRequest, response);
+			return;
+		}
+		if (target.equals("/favicon.ico")) {
+			favicon(baseRequest, response);
 			return;
 		}
 		System.out.println("UNKNOWN TARGET: '" + target + "'");
@@ -131,6 +91,120 @@ public class JsValidatorHandler extends AbstractHandler {
 		response.getWriter().println(jsonResponse);
 	}
 
+	private void loadJavascript(String target, Request baseRequest,
+			HttpServletResponse response) throws IOException {
+		System.out.println("load javascript " + target);
+		response.setContentType("text/javascript");
+		response.setStatus(HttpServletResponse.SC_OK);
+		baseRequest.setHandled(true);
+		InputStream is = this.getClass().getResourceAsStream(target);
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		String line;
+		while ((line = br.readLine()) != null) {
+			response.getWriter().println(line);
+		}
+		is.close();
+		return;
+	}
+
+	private void indexhtml(Request baseRequest, HttpServletResponse response)
+			throws IOException {
+		response.setContentType("text/html;charset=utf-8");
+		response.setStatus(HttpServletResponse.SC_OK);
+		baseRequest.setHandled(true);
+		InputStream is = this.getClass().getResourceAsStream("/index.html");
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		String line;
+		while ((line = br.readLine()) != null) {
+			response.getWriter().println(line);
+		}
+		is.close();
+		return;
+	}
+
+	private void validateJson(Request baseRequest, HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+		response.setContentType("application/json;charset=utf-8");
+		response.setStatus(HttpServletResponse.SC_OK);
+		baseRequest.setHandled(true);
+		List<String> validateMsgs = new ArrayList<String>();
+		try {
+			Gson gson = new Gson();
+			Person person = gson
+					.fromJson(request.getReader(), Person.class);
+			validate(person, validateMsgs);
+		} catch (JsonParseException e) {
+			e.printStackTrace();
+			validateMsgs.add("SYSTEM " + e.getCause().getMessage());
+		}
+		Gson gsonValidateMsgs = new Gson();
+		String jsonResponse = gsonValidateMsgs.toJson(validateMsgs);
+		System.out.println(jsonResponse);
+		response.getWriter().println(jsonResponse);
+		return;
+	}
+
+	private void favicon(Request baseRequest, HttpServletResponse response)
+			throws IOException {
+		response.setContentType("image/x-icon");
+		response.setStatus(HttpServletResponse.SC_OK);
+		baseRequest.setHandled(true);
+		// http://www.favicon.cc/?action=icon&file_id=33004
+		String faviconBase64 = 
+			"AAABAAEAEBAAAAAAAABoBQAAFgAAACgAAAAQAAAA" +
+			"IAAAAAEACAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAA" +
+			"AAAAAAAAzMzMAOjo6AD///8AZmZmAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+			"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEBAQE" +
+			"BAQAAAAAAAAABAEBAQEBAQEBBAAAAAAAAAQBAgIC" +
+			"AgICAQQAAAAAAAAEAQICAgICAgEEBAQEAAAABAEC" +
+			"AgICAgIBBAEBBAAAAAQBAgICAgICAQQDAQQAAAAE" +
+			"AQICAgICAgEEAQEEAAAABAEBAQEBAQEBBAQEBAAA" +
+			"AAQEBAQEBAQEBAQAAAAAAAAAAQEBAQEBAQEAAAAA" +
+			"AAAAAAABAQEBAQEBAAAAAAAAAAAAAQABAQAAAQAA" +
+			"AAAAAAAAAAEAAQEAAAEAAAAAAAAAAAAAAAEAAAAB" +
+			"AAAAAAAAAAAAAAABAAAAAAAAAAAAAP//AADAPwAA" +
+			"gB8AAIAfAACAAwAAgAMAAIADAACAAwAAgAMAAIAf" +
+			"AADAPwAA4D8AAOm/AADpvwAA+78AAPv/AAA=";
+		System.out.println("favicon");
+		response.getWriter().println(
+				org.eclipse.jetty.http.security.B64Code
+						.decode(faviconBase64));
+		return;
+	}
+
 	private void validate(Person person, List<String> validateMsgs) {
 		System.out.println("js validate");
 		JsValidation jv = new JsValidation();
@@ -138,6 +212,11 @@ public class JsValidatorHandler extends AbstractHandler {
 		jv.run(person, validateMsgs);
 	}
 
+	/**
+	 * Main method.
+	 * @param args Args
+	 * @throws Exception server exceptions.
+	 */
 	public static void main(String[] args) throws Exception {
 		Server server = new Server(8080);
 		server.setHandler(new JsValidatorHandler());
