@@ -56,7 +56,7 @@
 	  </execution>
 	</executions>
 	<configuration>
-	  <mainClass>net.choas.jsvalidator.server.JsValidationHandler</mainClass>
+	  <mainClass>net.choas.jsvalidator.server.JsValidatorHandler</mainClass>
 	</configuration>
       </plugin>
     </plugins>

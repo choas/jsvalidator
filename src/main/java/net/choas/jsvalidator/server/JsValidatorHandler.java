@@ -47,7 +47,7 @@ import com.google.gson.JsonParseException;
 // https://sites.google.com/site/gson/gson-user-guide#TOC-Object-Examples
 // http://download.oracle.com/javase/6/docs/technotes/guides/scripting/programmer_guide/index.html
 
-public class JsValidationHandler extends AbstractHandler {
+public class JsValidatorHandler extends AbstractHandler {
 
 	public void handle(String target, Request baseRequest,
 			HttpServletRequest request, HttpServletResponse response)
@@ -140,7 +140,7 @@ public class JsValidationHandler extends AbstractHandler {
 
 	public static void main(String[] args) throws Exception {
 		Server server = new Server(8080);
-		server.setHandler(new JsValidationHandler());
+		server.setHandler(new JsValidatorHandler());
 
 		server.start();
 		server.join();
