@@ -1,0 +1,16 @@
+JavaScript validation with Java
+
+This is a example project to use the same JavaScript files for the classic browser validation and also as Java backend validation.
+
+
+mvn compile
+
+mvn exec:java
+
+
+Open following URL with your browser:
+
+http://localhost:8080/
+
+Validation:
+All fields are mandatory and the Person have to be at least 18 years old.
