@@ -43,12 +43,16 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
-// http://wiki.eclipse.org/Jetty/Tutorial/Jetty_HelloWorld
-// https://sites.google.com/site/gson/gson-user-guide#TOC-Object-Examples
-// http://download.oracle.com/javase/6/docs/technotes/guides/scripting/programmer_guide/index.html
-
 /**
  * Jetty handler for a JsValidator.
+ * 
+ * Handler uses Jetty as (stand alone) server.
+ * To convert JSON to java objects GSON is used.
+ * 
+ * See also:
+ *   http://wiki.eclipse.org/Jetty/Tutorial/Jetty_HelloWorld
+ *   https://sites.google.com/site/gson/gson-user-guide#TOC-Object-Examples
+ *   http://download.oracle.com/javase/6/docs/technotes/guides/scripting/programmer_guide/index.html
  * 
  * @author Lars Gregori
  *
@@ -90,7 +94,6 @@ public class JsValidatorHandler extends AbstractHandler {
 		System.out.println(jsonResponse);
 		response.getWriter().println(jsonResponse);
 	}
-
 	private void loadJavascript(String target, Request baseRequest,
 			HttpServletResponse response) throws IOException {
 		System.out.println("load javascript " + target);
@@ -106,7 +109,6 @@ public class JsValidatorHandler extends AbstractHandler {
 		is.close();
 		return;
 	}
-
 	private void indexhtml(Request baseRequest, HttpServletResponse response)
 			throws IOException {
 		response.setContentType("text/html;charset=utf-8");
@@ -121,7 +123,6 @@ public class JsValidatorHandler extends AbstractHandler {
 		is.close();
 		return;
 	}
-
 	private void validateJson(Request baseRequest, HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 		response.setContentType("application/json;charset=utf-8");
@@ -143,7 +144,6 @@ public class JsValidatorHandler extends AbstractHandler {
 		response.getWriter().println(jsonResponse);
 		return;
 	}
-
 	private void favicon(Request baseRequest, HttpServletResponse response)
 			throws IOException {
 		response.setContentType("image/x-icon");
@@ -204,14 +204,12 @@ public class JsValidatorHandler extends AbstractHandler {
 						.decode(faviconBase64));
 		return;
 	}
-
 	private void validate(Person person, List<String> validateMsgs) {
 		System.out.println("js validate");
 		JsValidation jv = new JsValidation();
 		// jv.runWithDebug(person, validateMsgs);
 		jv.run(person, validateMsgs);
 	}
-
 	/**
 	 * Main method.
 	 * @param args Args
